@@ -1,7 +1,7 @@
 FROM python:3.7-slim-stretch
 
 RUN apt-get update && \
-		apt-get install --yes curl netstat && \
+		apt-get install --yes curl net-tools && \
 		rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \

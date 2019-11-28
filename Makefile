@@ -13,6 +13,6 @@ build-python-images:
 
 push-python-images:
 	docker tag zzy/python-base:latest $(DOCKER_HOST)/python-base:latest
-	docker tag zzy/python-builder:latest $(DOCKER_HOST)python-builder:latest
+	docker tag zzy/python-builder:latest $(DOCKER_HOST)/python-builder:latest
 	docker push $(DOCKER_HOST)/python-base:latest
 	docker push $(DOCKER_HOST)/python-builder:latest

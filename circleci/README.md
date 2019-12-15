@@ -40,3 +40,41 @@ circleci orb publish promote  woshizzy/service-base@dev:first patch
 # source
 circleci orb souce woshizzy/service-base@volatile
 ```
+
+## Introduction about orb resource
+
+### Basic orb object
+these are some basic attributes for orb obejct:
+> description: use to declare the obejct's function.
+
+> parameters: use to inject attributes to obejct, has `type` and `default` to declare.
+
+#### executors
+Setup runtime for jobs to run.
+```
+executors:
+    python:
+        description:
+        parameters:
+        docker:
+```
+#### commands
+Some step group, commands is basic unit in my orb to run every task.
+```
+commands:
+    first_task:
+        description:
+        parameters:
+        steps:
+```
+#### jobs
+Reuse resource for orb, need specify executor and also can invoke commands to finish his own task.
+```
+jobs:
+    test:
+        description:
+        parameters:
+        executor: python
+        steps:
+            - first_task
+```

@@ -18,7 +18,7 @@ publish_dev:
 	circleci orb publish orbs/$(ORB_NAME).yaml $(NAMESPACE)/$(ORB_NAME)@dev:$(CURRENT_VERSION)
 
 publish: publish_dev
-	circleci orb publish promte $(NAMESPACE)/$(ORB_NAME)@dev:$(CURRENT_VERSION) patch
+	circleci orb publish promote $(NAMESPACE)/$(ORB_NAME)@dev:$(CURRENT_VERSION) patch
 
 
 # check content in orbs.

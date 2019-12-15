@@ -1,2 +1,142 @@
 version: 2.1
-description: "Circleci orb for services"
+description: "Circleci orb for services."
+
+executors:
+  python-test:
+    description: "Executor use to run unit test."
+    parameters:
+      db_name:
+        type: string
+        default: demo
+    docker:
+      - image: circleci/python:3.7.3-stretch
+      - image: rabbitmq:3.7-management-alpine
+      - image: circleci/mysql:5.6.36
+        environment:
+          MYSQL_DATABASE: << parameters.db_name >>
+
+  python-base:
+    description: "Executor use to docker and k8s."
+    docker:
+      - image: circleci/python:3.7.3-stretch
+
+
+commands:
+  run_test:
+    description: "Unit test"
+    parameters:
+    steps:
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo pip install -U pip wheel setuptools
+            sudo pip install -U -e ".[dev]"
+
+      - run:
+          name: Run tests
+          command: |
+            mkdir /tmp/coverage-hmtl
+            ARGS=--disable-warnings HTMLCOV_DIR=/tmp/coverage-html make coverage
+
+      - store_artifacts:
+          path: /tmp/coverage-html
+          destination: coverage-html
+
+      - run:
+          name: Export db_revision
+          command: |
+            mkdir ~/project/current-db
+            pushd deploy/migrations; echo $(alembic heads) | cut -d ' ' -f 1 > ~/project/current-db/db_revision.txt;popd
+
+      - persist_to_workspace:
+          root: current-db
+          paths:
+            - db_revision.txt
+
+  build_images:
+    description: "Build images"
+    parameters:
+      service_name:
+        type: string
+        default: service
+    steps:
+      - checkout
+
+      - setup_remote_docker
+
+      - run:
+          name: Build docker images
+          command: |
+            make build docker-save
+
+      - persist_to_workspace:
+          root: docker-images
+          paths:
+            - << parameters.service_name >>.tar
+
+  push_images:
+    description: "Push images"
+    parameters:
+    steps:
+      - checkout
+
+      - setup_remote_docker
+
+      - attach_workspace:
+          at: docker-images
+      
+      - run:
+          name: Push docker images
+          command: |
+            make docker-login
+            make docker-load
+            make docker-tag
+            make push-images
+
+
+jobs:
+  test:
+    description: "Jobs to execute unit test in service."
+    parameters:
+      db_name:
+        type: string
+    executor: 
+      # params use for define db_name in python-test executor.
+      name: python-test
+      db_name: << parameters.db_name >>
+    steps:
+      - run_test
+
+  build:
+    description: "Jobs to build images."
+    parameters:
+      # params use to define images.tar's name.
+      service_name:
+        type: string
+    executor: python-base
+    steps:
+      - build_images
+          service_name: << parameters.service_name >>
+
+  push:
+    description: "Jobs to push images."
+    parameters:
+    executor: python-base
+    steps:
+      - push_images
+  
+  # example to show how to define condition jobs.
+  # condition_job:
+  #   description: "Jobs only run when condition is satisfy."
+  #   parameters:
+  #     run_migrations:
+  #       type: boolean
+  #       default: false
+  #   steps:
+  #     - when:
+  #         condition: << parameters.run_migrations >>
+  #         steps:
+  #           - run_migrations
+      

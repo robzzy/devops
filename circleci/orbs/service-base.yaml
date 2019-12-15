@@ -5,15 +5,15 @@ executors:
   python-test:
     description: "Executor use to run unit test."
     parameters:
-      db_name:
+      DB_NAME:
         type: string
-        default: demo
+        default: test_db 
     docker:
       - image: circleci/python:3.7.3-stretch
       - image: rabbitmq:3.7-management-alpine
       - image: circleci/mysql:5.6.36
         environment:
-          MYSQL_DATABASE: << parameters.db_name >>
+          MYSQL_DATABASE: << parameters.DB_NAME >>
 
   python-base:
     description: "Executor use to docker and k8s."
@@ -58,7 +58,7 @@ commands:
   build_images:
     description: "Build images"
     parameters:
-      service_name:
+      SERVICE_NAME:
         type: string
         default: service
     steps:
@@ -74,7 +74,7 @@ commands:
       - persist_to_workspace:
           root: docker-images
           paths:
-            - << parameters.service_name >>.tar
+            - << parameters.SERVICE_NAME >>.tar
 
   push_images:
     description: "Push images"
@@ -100,12 +100,12 @@ jobs:
   test:
     description: "Jobs to execute unit test in service."
     parameters:
-      db_name:
+      DB_NAME:
         type: string
     executor: 
-      # params use for define db_name in python-test executor.
+      # params use for define DB_NAME in python-test executor.
       name: python-test
-      db_name: << parameters.db_name >>
+      DB_NAME: << parameters.DB_NAME >>
     steps:
       - run_test
 
@@ -113,12 +113,12 @@ jobs:
     description: "Jobs to build images."
     parameters:
       # params use to define images.tar's name.
-      service_name:
+      SERVICE_NAME:
         type: string
     executor: python-base
     steps:
-      - build_images
-          service_name: << parameters.service_name >>
+      - build_images:
+          SERVICE_NAME: << parameters.SERVICE_NAME >>
 
   push:
     description: "Jobs to push images."

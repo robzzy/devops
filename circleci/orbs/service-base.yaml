@@ -20,6 +20,10 @@ executors:
     docker:
       - image: circleci/python:3.7.3-stretch
 
+  node-base:
+    description: "Executor for nodejs"
+    docker:
+      - image: circleci/node:stretch
 
 commands:
   run_test:
@@ -116,6 +120,16 @@ jobs:
       SERVICE_NAME:
         type: string
     executor: python-base
+    steps:
+      - build_images:
+          SERVICE_NAME: << parameters.SERVICE_NAME >>
+
+  node_build:
+    description: "Jobs to build node images"
+    parameters:
+      SERVICE_NAME:
+        type: string
+    executor: node-base
     steps:
       - build_images:
           SERVICE_NAME: << parameters.SERVICE_NAME >>

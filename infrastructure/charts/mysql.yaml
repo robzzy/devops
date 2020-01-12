@@ -6,6 +6,7 @@ metadata:
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
 ---
+# Declare a storage mount on local directory
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -28,6 +29,7 @@ spec:
           values: 
           - docker-for-desktop
 ---
+# pvc to request resources from StorageClass
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata: 

@@ -26,5 +26,5 @@ install-rabbitmq:
 	--set rabbitmq.erlangCookie=secretcookie \
 	--set nameOverride=rabbitmq-service \
 	--set fullnameOverride=rabbitmq-service \
-	-f infrastructure/charts/rabbitmq.yaml \
+	-f infrastructure/rabbitmq/rabbitmq.yaml \
 	stable/rabbitmq

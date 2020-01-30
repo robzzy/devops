@@ -11,4 +11,10 @@ deploy-kibana:
 deploy-metricbeat:
 	helm install metricbeat elastic/metricbeat
 
-deploy-elk: deploy-elasticsearch deploy-kibana deploy-metricbeat
+deploy-filebeat:
+	kubectl apply -f ./filebeat-kubernetes.yaml
+
+deploy-logstash:
+	helm install logging-logstash stable/logstash -f ./logstash.yaml
+
+deploy-elk: deploy-elasticsearch deploy-kibana deploy-filebeat deploy-logstash

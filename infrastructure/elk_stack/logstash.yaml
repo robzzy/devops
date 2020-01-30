@@ -1,0 +1,25 @@
+---
+# Declaration about Logstash
+
+elasticsearch:
+  host: elasticsearch-master
+  port: 9200
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: monitor
+  initialDelaySeconds: 60
+  # periodSeconds: 30
+  timeoutSeconds: 30
+  # failureThreshold: 6
+  # successThreshold: 1
+livenessProbe:
+  httpGet:
+    path: /
+    port: monitor
+  initialDelaySeconds: 60
+  # periodSeconds: 30
+  timeoutSeconds: 30
+  # failureThreshold: 6
+  # successThreshold: 1

@@ -28,6 +28,7 @@ spec:
           operator: In
           values: 
           - docker-for-desktop
+          - docker-desktop
 ---
 # pvc to request resources from StorageClass
 apiVersion: v1

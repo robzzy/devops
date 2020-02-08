@@ -9,7 +9,6 @@ Expand the name of the chart.
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
 */}}
 {{- define "elasticsearch.fullname" -}}
 {{- if .Values.fullnameOverride -}}
@@ -25,21 +24,85 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
-Create chart name and version as used by the chart label.
+Create a default fully qualified client name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "elasticsearch.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- define "elasticsearch.client.fullname" -}}
+{{ template "elasticsearch.fullname" . }}-{{ .Values.client.name }}
 {{- end -}}
 
 {{/*
-Common labels
+Create a default fully qualified data name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "elasticsearch.labels" -}}
-app.kubernetes.io/name: {{ include "elasticsearch.name" . }}
-helm.sh/chart: {{ include "elasticsearch.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- define "elasticsearch.data.fullname" -}}
+{{ template "elasticsearch.fullname" . }}-{{ .Values.data.name }}
+{{- end -}}
+
+{{/*
+Create a default fully qualified master name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "elasticsearch.master.fullname" -}}
+{{ template "elasticsearch.fullname" . }}-{{ .Values.master.name }}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the client component
+*/}}
+{{- define "elasticsearch.serviceAccountName.client" -}}
+{{- if .Values.serviceAccounts.client.create -}}
+    {{ default (include "elasticsearch.client.fullname" .) .Values.serviceAccounts.client.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccounts.client.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the data component
+*/}}
+{{- define "elasticsearch.serviceAccountName.data" -}}
+{{- if .Values.serviceAccounts.data.create -}}
+    {{ default (include "elasticsearch.data.fullname" .) .Values.serviceAccounts.data.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccounts.data.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the master component
+*/}}
+{{- define "elasticsearch.serviceAccountName.master" -}}
+{{- if .Values.serviceAccounts.master.create -}}
+    {{ default (include "elasticsearch.master.fullname" .) .Values.serviceAccounts.master.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccounts.master.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+plugin installer template
+*/}}
+{{- define "plugin-installer" -}}
+- name: es-plugin-install
+  image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+  imagePullPolicy: {{ .Values.image.pullPolicy }}
+  securityContext:
+    capabilities:
+      add:
+        - IPC_LOCK
+        - SYS_RESOURCE
+  command:
+    - "sh"
+    - "-c"
+    - |
+      {{- range .Values.cluster.plugins }}
+      /usr/share/elasticsearch/bin/elasticsearch-plugin install -b {{ . }}
+      {{- end }}
+  volumeMounts:
+  - mountPath: /usr/share/elasticsearch/plugins/
+    name: plugindir
+  - mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+    name: config
+    subPath: elasticsearch.yml
 {{- end -}}

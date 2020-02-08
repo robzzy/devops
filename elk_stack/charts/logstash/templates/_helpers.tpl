@@ -32,14 +32,12 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
-Common labels
+Create the name of the service account to use
 */}}
-{{- define "logstash.labels" -}}
-app.kubernetes.io/name: {{ include "logstash.name" . }}
-helm.sh/chart: {{ include "logstash.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- define "logstash.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "logstash.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
 {{- end -}}

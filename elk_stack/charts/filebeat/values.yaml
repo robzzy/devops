@@ -1,7 +1,5 @@
 ---
 # Logstash host setup
-logstashHost: &logstashHost
-  - "logging-logstash:5044"
 # Allows you to add any config files in /usr/share/filebeat
 # such as filebeat.yml
 filebeatConfig:
@@ -14,7 +12,9 @@ filebeatConfig:
       - add_kubernetes_metadata: ~
     output:
       logstash:
-        hosts: *logstashHost
+        hosts:
+        - "logging-logstash:5044"
+
 # Extra environment variables to append to the DaemonSet pod spec.
 # This will be appended to the current 'env:' key. You can use any of the kubernetes env
 # syntax here

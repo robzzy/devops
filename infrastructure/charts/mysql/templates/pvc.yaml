@@ -1,0 +1,43 @@
+# Declare StorageClass
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ template "mysql.storageClassName" . }}
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: {{ .Values.volumeBindingMode }}
+---
+# Declare a storage mount on local directory
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ template "mysql.name" . }}-pv
+spec:
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  accessModes:
+  - {{ .Values.persistence.accessMode }}
+  persistentVolumeReclaimPolicy: {{ .Values.persistence.policy }}
+  storageClassName: {{ template "mysql.storageClassName" . }}
+  local:
+    path: {{ .Values.volumeMount }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values: 
+          - {{ .Values.node.name }}
+---
+# pvc to request resources from StorageClass
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: 
+  name: {{ .Values.pvc.name }}
+spec:
+  accessModes:
+  - {{ .Values.pvc.accessMode }}
+  storageClassName: {{ template "mysql.storageClassName" . }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.size }}

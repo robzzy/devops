@@ -1,0 +1,2 @@
+MySQL can be accessed via port 3306 on the following DNS name from within your cluster:
+    kubernetes.docker.internal:[nodePort]

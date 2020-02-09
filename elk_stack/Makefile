@@ -1,20 +1,13 @@
-deploy-pv:
-	kubectl apply -f ./es-pvc.yaml
-
-.PHONY: deploy-elasticsearch
-deploy-elasticsearch: deploy-pv
-	helm install elasticsearch elastic/elasticsearch -f ./elasticsearch.yaml
-
-deploy-kibana:
-	helm install kibana elastic/kibana
-
-deploy-metricbeat:
-	helm install metricbeat elastic/metricbeat
+deploy-es:
+	make -C charts/elasticsearch deploy
 
 deploy-filebeat:
-	kubectl apply -f ./filebeat-kubernetes.yaml
+	make -C charts/filebeat deploy
+
+deploy-kibana:
+	make -C charts/kibana deploy
 
 deploy-logstash:
-	helm install logging-logstash stable/logstash -f ./logstash.yaml
+	make -C charts/logstash deploy
 
-deploy-elk: deploy-elasticsearch deploy-kibana deploy-filebeat deploy-logstash
+deploy-elk: deploy-es deploy-filebeat deploy-kibana deploy-logstash

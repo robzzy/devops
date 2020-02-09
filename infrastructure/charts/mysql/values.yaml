@@ -1,0 +1,38 @@
+node:
+  name: docker-desktop
+
+image:
+  repository: mysql
+  tag: "5.6.34"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+internalPort: 3306
+
+service:
+  type: NodePort
+  externalPort: 3306
+  internalPort: 3306
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 2Gi
+  policy: Retain
+
+volumeBindingMode: WaitForFirstConsumer
+volumeMount: "/Users/zzy/data/mysql"
+
+pvc:
+  name: "mysql-pvc"
+  size: 2Gi
+  accessMode: ReadWriteOnce
+
+## Configure resource requests and limits
+## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+##
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m

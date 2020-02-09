@@ -1,0 +1,9 @@
+apiVersion: v1
+description: Manage common ConfigMap and Secret
+home: https://github.com/robzzy/devops/common
+maintainers:
+- email: iamd4vidzeng@gmail.com
+  name: iamdavidzeng
+name: common
+version: 0.0.1
+appVersion: 0.0.1

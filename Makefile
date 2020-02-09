@@ -10,21 +10,11 @@ build-python-images:
 
 
 # push
-
 push-python-images:
 	docker tag zzy/python-base:latest $(DOCKER_HOST)/python-base:latest
 	docker tag zzy/python-builder:latest $(DOCKER_HOST)/python-builder:latest
 	docker push $(DOCKER_HOST)/python-base:latest
 	docker push $(DOCKER_HOST)/python-builder:latest
 
-
-# rabbitmq
-install-rabbitmq:
-	helm install my-rabbitmq \
-	--set rabbitmq.username=admin \
-	--set rabbitmq.password=$(RABBIT_PASS) \
-	--set rabbitmq.erlangCookie=secretcookie \
-	--set nameOverride=rabbitmq-service \
-	--set fullnameOverride=rabbitmq-service \
-	-f infrastructure/rabbitmq/rabbitmq.yaml \
-	stable/rabbitmq
+apply-common:
+	make -C common deploy

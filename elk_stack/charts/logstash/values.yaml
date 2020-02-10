@@ -9,7 +9,7 @@ updateStrategy:
 terminationGracePeriodSeconds: 30
 
 image:
-  repository: docker.elastic.co/logstash/logstash-oss
+  repository: zengzhiyuan/logstash-oss
   tag: 7.1.1
   pullPolicy: IfNotPresent
   ## Add secrets manually via kubectl on kubernetes cluster and reference here
@@ -171,6 +171,8 @@ volumeMounts:
     mountPath: /usr/share/logstash/files
   - name: pipeline
     mountPath: /usr/share/logstash/pipeline
+  - name: elasticsearch-templates
+    mountPath: /usr/share/logstash/elasticsearch-templates
 
 volumes: []
   # - name: tls
@@ -182,48 +184,6 @@ volumes: []
   # - name: certs
   #   hostPath:
   #     path: /tmp
-
-exporter:
-  logstash:
-    enabled: false
-    image:
-      repository: bonniernews/logstash_exporter
-      tag: v0.1.2
-      pullPolicy: IfNotPresent
-    env: {}
-    resources: {}
-    path: /metrics
-    port: 9198
-    target:
-      port: 9600
-      path: /metrics
-    livenessProbe:
-      httpGet:
-        path: /metrics
-        port: ls-exporter
-      periodSeconds: 15
-      timeoutSeconds: 60
-      failureThreshold: 8
-      successThreshold: 1
-    readinessProbe:
-      httpGet:
-        path: /metrics
-        port: ls-exporter
-      periodSeconds: 15
-      timeoutSeconds: 60
-      failureThreshold: 8
-      successThreshold: 1
-  serviceMonitor:
-    ## If true, a ServiceMonitor CRD is created for a prometheus operator
-    ## https://github.com/coreos/prometheus-operator
-    ##
-    enabled: false
-    #  namespace: monitoring
-    labels: {}
-    interval: 10s
-    scrapeTimeout: 10s
-    scheme: http
-    port: metrics
 
 elasticsearch:
   host: logging-elasticsearch-client
@@ -309,27 +269,52 @@ inputs:
       #   type => "example"
       # }
     }
+
 filters:
-  # main: |-
-  #   filter {
-  #   }
+  main: |-
+    filter {
+      if [message] =~ "^{.*}$" {
+        mutate {
+          add_tag => [ "trace" ]
+        }
+        json {
+          source => "message"
+        }
+        if [exception_args] {
+          json_encode {
+            source => "exception_args"
+          }
+        }
+        if [call_args] and ![call_args_truncated] {
+          json_encode {
+            source => "call_args"
+          }
+        }
+        if [response] and ![response_truncated] {
+          json_encode {
+            source => "response"
+          }
+        }
+      }
+    }
 
 outputs:
   main: |-
     output {
-      # stdout { codec => rubydebug }
-      elasticsearch {
+      if "trace" in [tags] {
+        elasticsearch {
+          hosts => [ "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}" ]
+          index => "service-traces-%{+yyyy.MM.dd}"
+          template_name => "traces"
+          template => "/usr/share/logstash/elasticsearch-templates/elasticsearch-templates-traces.json"
+        }
+      } else {
+        elasticsearch {
         hosts => ["${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}"]
         manage_template => false
         index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
+        }
       }
-      # kafka {
-      #   ## ref: https://www.elastic.co/guide/en/logstash/current/plugins-outputs-kafka.html
-      #   bootstrap_servers => "kafka-output:9092"
-      #   codec => json { charset => "UTF-8" }
-      #   compression_type => "lz4"
-      #   topic_id => "destination"
-      # }
     }
 serviceAccount:
   # Specifies whether a ServiceAccount should be created

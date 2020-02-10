@@ -45,24 +45,13 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: monitor
-              containerPort: {{ .Values.exporter.logstash.target.port }}
-              protocol: TCP
 {{ toYaml .Values.ports | indent 12 }}
-          livenessProbe:
-{{ toYaml .Values.livenessProbe | indent 12 }}
-          readinessProbe:
-{{ toYaml .Values.readinessProbe | indent 12 }}
+
           {{- if .Values.args }}
           args:
 {{ .Values.args | toYaml | indent 12 }}
           {{- end }}
           env:
-            ## Logstash monitoring API host and port env vars
-            - name: HTTP_HOST
-              value: "0.0.0.0"
-            - name: HTTP_PORT
-              value: {{ .Values.exporter.logstash.target.port | quote }}
             ## Elasticsearch output
             - name: ELASTICSEARCH_HOST
               value: {{ tpl (.Values.elasticsearch.host | toString) $ | quote }}
@@ -83,38 +72,6 @@ spec:
 {{ toYaml .Values.resources | indent 12 }}
           volumeMounts:
 {{ toYaml .Values.volumeMounts | indent 12 }}
-
-{{- if .Values.exporter.logstash.enabled }}
-        ## logstash-exporter
-        - name: {{ .Chart.Name }}-exporter
-          image: "{{ .Values.exporter.logstash.image.repository }}:{{ .Values.exporter.logstash.image.tag }}"
-          imagePullPolicy: {{ .Values.exporter.logstash.image.pullPolicy }}
-          command: ["/bin/sh", "-c"]
-          ## Delay start of logstash-exporter to give logstash more time to come online.
-          args:
-            - >-
-              sleep 60;
-              exec /logstash_exporter
-                --logstash.endpoint=http://localhost:{{ .Values.exporter.logstash.target.port }}
-                --web.listen-address=:{{ .Values.exporter.logstash.port }}
-          ports:
-            - name: ls-exporter
-              containerPort: {{ .Values.exporter.logstash.port }}
-              protocol: TCP
-          livenessProbe:
-{{ toYaml .Values.exporter.logstash.livenessProbe | indent 12 }}
-          readinessProbe:
-{{ toYaml .Values.exporter.logstash.readinessProbe | indent 12 }}
-          {{- with .Values.exporter.logstash.config }}
-          env:
-            {{- range $key, $value := . }}
-            - name: {{ $key | upper | replace "." "_" }}
-              value: {{ $value | quote }}
-            {{- end }}
-          {{- end }}
-          resources:
-{{ toYaml .Values.exporter.logstash.resources | indent 12 }}
-{{- end }}
 
     {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -140,6 +97,9 @@ spec:
         - name: pipeline
           configMap:
             name: {{ template "logstash.fullname" . }}-pipeline
+        - name: elasticsearch-templates
+          configMap:
+            name: {{ template "logstash.fullname" . }}-elasticsearch-templates
     {{- with .Values.volumes }}
 {{ toYaml . | indent 8 }}
     {{- end }}

@@ -59,3 +59,18 @@ data:
 {{ $value | indent 4 }}
 {{- end }}
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "logstash.fullname" . }}-elasticsearch-templates
+  labels:
+    app: {{ template "logstash.name" . }}
+    chart: {{ template "logstash.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+{{- $files := .Files }}
+{{- range $path, $bytes := .Files.Glob "elasticsearch-templates/*" }}
+  {{ $path | replace "/" "-" }}: |-
+{{ $files.Get $path | indent 4 }}
+{{- end }}

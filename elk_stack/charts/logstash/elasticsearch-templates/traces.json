@@ -1,173 +1,144 @@
 {
-    "order" : 0,
-    "version" : 50001,
-    "template" : "service-traces-*",
-    "settings" : {
-      "index" : {
-        "refresh_interval" : "10s",
-        "number_of_shards" : 2,
-        "number_of_replicas": 1
-      }
-    },
-    "mappings" : {
-      "_default_" : {
-        "dynamic_templates" : [
-          {
-            "message_field" : {
-              "path_match" : "message",
-              "mapping" : {
-                "norms" : false,
-                "type" : "text"
-              },
-              "match_mapping_type" : "string"
-            }
-          },
-          {
-            "string_fields" : {
-              "mapping" : {
-                "norms" : false,
-                "type" : "text",
-                "fields" : {
-                  "keyword" : {
-                    "ignore_above" : 256,
-                    "type" : "keyword"
-                  }
-                }
-              },
-              "match_mapping_type" : "string",
-              "match" : "*"
-            }
+  "order": 0,
+  "index_patterns": "service-traces-*",
+  "settings": {
+    "index": {
+      "refresh_interval": "10s",
+      "number_of_shards": 2,
+      "number_of_replicas": 1
+    }
+  },
+  "mappings": {
+    "dynamic_templates": [
+      {
+        "message_field": {
+          "path_match": "message",
+          "match_mapping_type": "string",
+          "mapping": {
+            "norms": false,
+            "type": "text"
           }
-        ],
-        "properties" : {
-          "@timestamp" : {
-            "type" : "date"
-          },
-          "geoip" : {
-            "dynamic" : true,
-            "properties" : {
-              "ip" : {
-                "type" : "ip"
-              },
-              "latitude" : {
-                "type" : "half_float"
-              },
-              "location" : {
-                "type" : "geo_point"
-              },
-              "longitude" : {
-                "type" : "half_float"
+        }
+      },
+      {
+        "string_fields": {
+          "match": "*",
+          "match_mapping_type": "string",
+          "mapping": {
+            "norms": false,
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
               }
             }
-          },
-          "@version" : {
-            "type" : "keyword"
-          },
-  
-          "timestamp": {
-            "type": "date",
-            "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"
-          },
-  
-          "stage": {
-            "type": "keyword"
-          },
-  
-          "call_id": {
-            "type": "text"
-          },
-  
-          "call_id_stack": {
-            "type": "text"
-          },
-  
-          "origin_call_id": {
-            "type": "text"
-          },
-  
-          "hostname": {
-            "type": "keyword"
-          },
-  
-          "service": {
-            "type": "keyword"
-          },
-  
-          "entrypoint_name": {
-            "type": "keyword"
-          },
-  
-          "entrypoint_type": {
-            "type": "keyword"
-          },
-  
-          "context_data": {
-            "dynamic" : true,
-            "type": "nested"
-          },
-  
-          "call_args": {
-            "type": "text"
-          },
-  
-          "call_args_redacted": {
-            "type": "boolean"
-          },
-  
-          "call_args_truncated": {
-            "type": "boolean"
-          },
-  
-          "call_args_length": {
-            "type": "integer"
-          },
-  
-          "response": {
-            "type": "text"
-          },
-  
-          "response_truncated": {
-            "type": "boolean"
-          },
-  
-          "response_length": {
-            "type": "integer"
-          },
-  
-          "response_status": {
-            "type": "keyword"
-          },
-  
-          "response_time": {
-            "type": "float"
-          },
-  
-          "exception_type": {
-            "type": "keyword"
-          },
-  
-          "exception_path": {
-            "type": "keyword"
-          },
-  
-          "exception_args": {
-            "type": "text"
-          },
-  
-          "exception_value": {
-            "type": "text"
-          },
-  
-          "exception_traceback": {
-            "type": "text"
-          },
-  
-          "exception_expected": {
-            "type": "boolean"
           }
         }
       }
-    },
-    "aliases" : { }
+    ],
+    "properties": {
+      "@timestamp": {
+        "type": "date"
+      },
+      "geoip": {
+        "dynamic": true,
+        "properties": {
+          "ip": {
+            "type": "ip"
+          },
+          "latitude": {
+            "type": "half_float"
+          },
+          "location": {
+            "type": "geo_point"
+          },
+          "longitude": {
+            "type": "half_float"
+          }
+        }
+      },
+      "@version": {
+        "type": "keyword"
+      },
+      "timestamp": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss.SSSSSS"
+      },
+      "stage": {
+        "type": "keyword"
+      },
+      "call_id": {
+        "type": "text"
+      },
+      "call_id_stack": {
+        "type": "text"
+      },
+      "origin_call_id": {
+        "type": "text"
+      },
+      "hostname": {
+        "type": "keyword"
+      },
+      "service": {
+        "type": "keyword"
+      },
+      "entrypoint_name": {
+        "type": "keyword"
+      },
+      "entrypoint_type": {
+        "type": "keyword"
+      },
+      "context_data": {
+        "dynamic": true,
+        "type": "nested"
+      },
+      "call_args": {
+        "type": "text"
+      },
+      "call_args_redacted": {
+        "type": "boolean"
+      },
+      "call_args_truncated": {
+        "type": "boolean"
+      },
+      "call_args_length": {
+        "type": "integer"
+      },
+      "response": {
+        "type": "text"
+      },
+      "response_truncated": {
+        "type": "boolean"
+      },
+      "response_length": {
+        "type": "integer"
+      },
+      "response_status": {
+        "type": "keyword"
+      },
+      "response_time": {
+        "type": "float"
+      },
+      "exception_type": {
+        "type": "keyword"
+      },
+      "exception_path": {
+        "type": "keyword"
+      },
+      "exception_args": {
+        "type": "text"
+      },
+      "exception_value": {
+        "type": "text"
+      },
+      "exception_traceback": {
+        "type": "text"
+      },
+      "exception_expected": {
+        "type": "boolean"
+      }
+    }
+  },
+  "aliases": {}
 }
-  

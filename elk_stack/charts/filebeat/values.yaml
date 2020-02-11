@@ -9,7 +9,16 @@ filebeatConfig:
       containers.ids:
       - '*'
       processors:
-      - add_kubernetes_metadata: ~
+        - add_kubernetes_metadata: ~
+        - drop_event:
+            when:
+              or:
+                - regexp:
+                    message: "healthcheck"
+                - equals.kubernetes.container.name: logging-filebeat
+                - equals.kubernetes.container.name: logging-elasticsearch
+                - equals.kubernetes.container.name: logging-logstash
+      tags: ["robzzy"]
     output:
       logstash:
         hosts:

@@ -1,6 +1,6 @@
 image:
-  repository: "docker.elastic.co/kibana/kibana-oss"
-  tag: "6.7.0"
+  repository: "docker.elastic.co/kibana/kibana"
+  tag: "7.5.2"
   pullPolicy: "IfNotPresent"
 
 testFramework:
@@ -96,20 +96,6 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   # If set and create is false, the service account must be existing
   name:
-
-livenessProbe:
-  enabled: false
-  path: /status
-  initialDelaySeconds: 30
-  timeoutSeconds: 10
-
-readinessProbe:
-  enabled: false
-  path: /status
-  initialDelaySeconds: 30
-  timeoutSeconds: 10
-  periodSeconds: 10
-  successThreshold: 5
 
 # Enable an authproxy. Specify container in extraContainers
 authProxyEnabled: false

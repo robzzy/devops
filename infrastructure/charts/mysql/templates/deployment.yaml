@@ -33,10 +33,10 @@ spec:
         - name: {{ template "mysql.name" . }}
           containerPort: {{ .Values.internalPort }}
           protocol: TCP
-        volumeMounts:
-        - name: {{ .Values.pvc.name }}
-          mountPath: "/var/lib/mysql"
-      volumes:
-      - name: {{ .Values.pvc.name }}
-        persistentVolumeClaim:
-          claimName: {{ .Values.pvc.name }}
+      #   volumeMounts:
+      #   - name: {{ .Values.pvc.name }}
+      #     mountPath: "/var/lib/mysql"
+      # volumes:
+      # - name: {{ .Values.pvc.name }}
+      #   persistentVolumeClaim:
+      #     claimName: {{ .Values.pvc.name }}

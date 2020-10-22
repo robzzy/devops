@@ -1,9 +1,9 @@
 node:
-  name: docker-desktop
+  name: minikube
 
 image:
   repository: mysql
-  tag: "5.6.34"
+  tag: 8
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -22,7 +22,7 @@ persistence:
   policy: Retain
 
 volumeBindingMode: WaitForFirstConsumer
-volumeMount: "/Users/zzy/data/mysql"
+volumeMount: "/Users/a/data/mysql8"
 
 pvc:
   name: "mysql-pvc"

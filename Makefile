@@ -3,11 +3,9 @@
 DOCKER_HOST ?= zengzhiyuan
 
 # build
-
 build-python-images:
 	docker build -t zzy/python-base:latest -f images/python-base.docker images
 	docker build -t zzy/python-builder:latest -f images/python-builder.docker images
-
 
 # push
 push-python-images:

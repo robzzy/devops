@@ -1,5 +1,5 @@
 REMOTE_HOST ?= zengzhiyuan
-LOGSTASH_TAG ?= 7.1.1
+LOGSTASH_TAG ?= 7.9.3
 
 deploy-es:
 	make -C charts/elasticsearch deploy

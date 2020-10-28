@@ -10,7 +10,7 @@ terminationGracePeriodSeconds: 30
 
 image:
   repository: zengzhiyuan/logstash-oss
-  tag: 7.1.1
+  tag: 7.9.3
   pullPolicy: IfNotPresent
   ## Add secrets manually via kubectl on kubernetes cluster and reference here
   #  pullSecrets:

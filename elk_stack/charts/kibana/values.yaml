@@ -1,6 +1,6 @@
 image:
   repository: "docker.elastic.co/kibana/kibana"
-  tag: "7.5.2"
+  tag: "7.9.3"
   pullPolicy: "IfNotPresent"
 
 testFramework:
@@ -39,6 +39,9 @@ files:
     server.host: "0"
     ## For kibana < 6.6, use elasticsearch.url instead
     elasticsearch.hosts: http://logging-elasticsearch-client:9200
+    xpack:
+      encryptedSavedObjects:
+        encryptionKey: something_at_least_32_characters
 
     ## Custom config properties below
     ## Ref: https://www.elastic.co/guide/en/kibana/current/settings.html

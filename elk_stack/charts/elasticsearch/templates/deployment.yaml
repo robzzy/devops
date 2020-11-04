@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "elasticsearch.name" . }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}"
+    app: "{{ template "elasticsearch.name" . }}"
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: "{{ template "elasticsearch.name" . }}"
+  template:
+    metadata:
+      labels:
+        heritage: {{ .Release.Service | quote }}
+        release: {{ .Release.Name | quote }}
+        chart: "{{ .Chart.Name }}"
+        app: "{{ template "elasticsearch.name" . }}"
+    spec:
+      containers:
+        - name: "{{ template "elasticsearch.name" . }}"
+          image: "{{ .Values.image }}:{{ .Values.imageTag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+          resources:
+  {{ toYaml .Values.initResources | indent 10 }}
+          ports:
+            - containerPort: {{ .Values.httpPort }}
+          env:
+            - name: "discovery.type"
+              value: "single-node"
+      restartPolicy: Always
+      

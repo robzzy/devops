@@ -90,7 +90,7 @@ spec:
 {{ toYaml .Values.extraInitContainers | indent 8 }}
       {{- end }}
       containers:
-      - name: "filebeat"
+      - name: {{ .Chart.Name }}
         image: "{{ .Values.image }}:{{ .Values.imageTag }}"
         imagePullPolicy: "{{ .Values.imagePullPolicy }}"
         args:

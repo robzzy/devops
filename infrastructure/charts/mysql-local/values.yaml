@@ -1,0 +1,8 @@
+hostIP: host.minikube.internal
+
+port: 3306
+
+service:
+  protocol: TCP
+  internalPort: 3306
+  externalPort: 3306

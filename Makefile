@@ -16,3 +16,14 @@ push-python-images:
 
 apply-common:
 	make -C common deploy
+
+apply-mysql:
+	make -C infrastructure/charts/mysql-local deploy
+
+apply-rabbitmq:
+	make -C infrastructure/charts/rabbitmq-local deploy
+
+apply-elk:
+	make -C elk_stack deploy-elk
+
+deploy-infra: apply-common apply-mysql apply-rabbitmq apply-elk

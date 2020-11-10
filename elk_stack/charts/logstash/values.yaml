@@ -303,14 +303,14 @@ outputs:
     output {
       if "trace" in [tags] {
         elasticsearch {
-          hosts => [ "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}" ]
+          hosts => [ "http://logging-elasticsearch-client:9200" ]
           index => "service-traces-%{+yyyy.MM.dd}"
           template_name => "traces"
           template => "/usr/share/logstash/elasticsearch-templates/elasticsearch-templates-traces.json"
         }
       } else {
         elasticsearch {
-        hosts => ["${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}"]
+        hosts => ["http://logging-elasticsearch-client:9200"]
         manage_template => false
         index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
         }

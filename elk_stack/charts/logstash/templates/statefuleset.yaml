@@ -52,11 +52,6 @@ spec:
 {{ .Values.args | toYaml | indent 12 }}
           {{- end }}
           env:
-            ## Elasticsearch output
-            - name: ELASTICSEARCH_HOST
-              value: {{ tpl (.Values.elasticsearch.host | toString) $ | quote }}
-            - name: ELASTICSEARCH_PORT
-              value: {{ .Values.elasticsearch.port | quote }}
             # Logstash Java Options
             - name: LS_JAVA_OPTS
               value: {{ .Values.logstashJavaOpts }}

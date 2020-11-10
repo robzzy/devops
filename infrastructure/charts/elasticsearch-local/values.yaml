@@ -1,0 +1,11 @@
+hostIP: host.minikube.internal
+
+port: 9200
+
+service:
+  name: logging-elasticsearch-client
+  protocol: TCP
+  internalPort: 9200
+  externalPort: 9200
+
+

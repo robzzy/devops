@@ -23,7 +23,7 @@ apply-mysql:
 apply-rabbitmq:
 	make -C infrastructure/charts/rabbitmq-local deploy
 
-apply-elk:
-	make -C elk_stack deploy-elk
+apply-elasticsearch:
+	make -C infrastructure/charts/elasticsearch-local deploy
 
-deploy-infra: apply-common apply-mysql apply-rabbitmq apply-elk
+deploy-infra: apply-common apply-mysql apply-rabbitmq apply-elasticsearch

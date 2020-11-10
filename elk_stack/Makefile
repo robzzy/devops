@@ -13,7 +13,7 @@ deploy-kibana:
 deploy-logstash:
 	make -C charts/logstash deploy
 
-deploy-elk: deploy-es deploy-filebeat deploy-kibana deploy-logstash
+deploy-elk: deploy-filebeat deploy-kibana deploy-logstash
 
 build_images:
 	docker build -t zengzhiyuan/logstash-oss:${LOGSTASH_TAG} -f images/logstash/Dockerfile images;

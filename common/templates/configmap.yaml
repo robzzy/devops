@@ -6,4 +6,5 @@ data:
   RABBIT_USER: {{ .Values.rabbitmq.user }}
   RABBIT_PORT: {{ .Values.rabbitmq.port | quote }}
   RABBIT_SERVER: {{ .Values.rabbitmq.server }}
+  RABBIT_VHOST: {{ .Values.rabbitmq.vhost | quote }}
   DB_SERVER: {{ .Values.mysql.server }}

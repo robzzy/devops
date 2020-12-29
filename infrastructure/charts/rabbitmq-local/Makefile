@@ -1,7 +1,7 @@
 .PHONY: test
 SHELL = /bin/bash
 
-HOST ?= $(shell ifconfig en0 | grep netmask | awk '{print $$2}' )
+HOST ?= $(shell ifconfig | grep netmask | tail -n 1 | awk '{print $$2}' )
 
 
 PROJECT ?= rabbitmq
